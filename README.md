@@ -1,1 +1,1 @@
-This is my try to create github.io web page.
+This to be my github.io web page.
