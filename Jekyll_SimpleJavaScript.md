@@ -8,7 +8,7 @@ title: Simple JavaScript Test
 <textarea cols="70" rows="10" id="input" placeholder="Enter your JavaScript code here">
     function sum(a, b)
       { return a + b;} 
-    window.alert("The sum(5,3) is:",sum(5,3));
+    window.alert("The sum(5,3) is:" + sum(5,3));
     console.log("The sum(5,3) is:",sum(5,3));
     sum(5, 3);
 </textarea>
