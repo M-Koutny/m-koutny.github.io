@@ -5,7 +5,7 @@ title: Simple JavaScript Test
 
 # Simple JavaScript Test
 
-<textarea id="input" placeholder="Enter your JavaScript code here">
+<textarea cols="50" rows="10" id="input" placeholder="Enter your JavaScript code here">
     function sum(a, b)
       { return a + b;} 
     window.alert("The sum is sum(5,3): ",sum(5,3));
@@ -13,7 +13,7 @@ title: Simple JavaScript Test
     sum(5, 3);
 </textarea>
 <button onclick="runCode()">Eval</button>
-<textarea id="output" readonly placeholder="Output will appear here"></textarea>
+<textarea cols="50" rows="10" id="The output  (after pressing "Eval" ) to be displayed here" readonly placeholder="Output will appear here"></textarea>
 
 <script>
     function runCode() {
