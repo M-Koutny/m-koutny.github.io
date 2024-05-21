@@ -12,7 +12,7 @@ title: Simple JavaScript Test
     console.log("The sum(5,3) is:",sum(5,3));
     sum(5, 3);
 </textarea>
-<button onclick="runCode">Eval</button>
+<button onclick="runCode()">Eval</button>
 <textarea cols="70" rows="10" id="output" readonly placeholder="The output (after pressing Eval) to be displayed here"> </textarea>
 
 <script>
