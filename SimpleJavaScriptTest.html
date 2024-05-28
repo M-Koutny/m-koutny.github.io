@@ -4,19 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simple JavaScript Test</title>
+    <style>
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        textarea {
+            margin: 10px;
+        }
+    </style>
 </head>
 <body>
     <h1>Simple JavaScript Test</h1>
 
-    <textarea cols="70" rows="10" id="input" placeholder="Enter your JavaScript code here">
-        function sum(a, b)
-          { return a + b;}
-        window.alert("The sum(5,3) is:" + sum(5,3));
-        console.log("The sum(5,3) is:",sum(5,3));
-        sum(5, 3);
-    </textarea>
-    <button onclick="runCode()">Eval</button>
-    <textarea cols="70" rows="10" id="output" readonly placeholder="The output (after pressing Eval) to be displayed here"> </textarea>
+    <div class="container">
+        <textarea cols="70" rows="10" id="input" placeholder="Enter your JavaScript code here">
+            function sum(a, b)
+              { return a + b;}
+            window.alert("The sum(5,3) is:" + sum(5,3));
+            console.log("The sum(5,3) is:",sum(5,3));
+            sum(5, 3);
+        </textarea>
+        <button onclick="runCode()">Eval</button>
+        <textarea cols="70" rows="10" id="output" readonly placeholder="The output (after pressing Eval) to be displayed here"> </textarea>
+    </div>
 
     <script>
         function runCode() {
