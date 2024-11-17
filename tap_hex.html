@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hex Viewer for TAP File</title>
+    <style>
+        body {
+            font-family: monospace;
+        }
+        textarea {
+            width: 100%;
+            height: 500px;
+            font-size: 14px;
+        }
+        button {
+            font-size: 16px;
+            padding: 10px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h2>ZX Spectrum TAP File Hex Viewer</h2>
+    <p>Upload a `.TAP` file to view its hexadecimal content.</p>
+    <input type="file" id="tapFile" accept=".tap">
+    <button onclick="readAndDisplayHex()">Open and View Hex</button>
+    <textarea id="hexOutput" readonly></textarea>
+
+    <script>
+        function readAndDisplayHex() {
+            const fileInput = document.getElementById('tapFile');
+            const outputArea = document.getElementById('hexOutput');
+
+            if (!fileInput.files.length) {
+                alert('Please upload a .TAP file.');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                let hexOutput = '';
+
+                for (let i = 0; i < data.length; i += 16) {
+                    // Address (hex)
+                    const address = i.toString(16).padStart(6, '0').toUpperCase();
+
+                    // Get the next 16 bytes (or remaining bytes if fewer)
+                    const lineBytes = data.slice(i, i + 16);
+                    const hexBytes = lineBytes.map(byte => byte.toString(16).padStart(2, '0').toUpperCase()).join(' ');
+
+                    // Get the ASCII characters, replacing non-printable with '.'
+                    const asciiChars = lineBytes.map(byte => (byte >= 32 && byte <= 126) ? String.fromCharCode(byte) : '.').join('');
+
+                    // Combine address, hex bytes, and ASCII chars into one line
+                    hexOutput += `${address}  ${hexBytes}  ${asciiChars}\n`;
+                }
+
+                outputArea.value = hexOutput; // Output the formatted hex to the textarea
+            };
+
+            reader.readAsArrayBuffer(file);
+        }
+    </script>
+</body>
+</html>
