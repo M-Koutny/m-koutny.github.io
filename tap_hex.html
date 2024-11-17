@@ -47,7 +47,7 @@
                     // Address (hex)
                     const address = i.toString(16).padStart(6, '0').toUpperCase();
 
-                    // Get the next 16 bytes (or fewer if remaining bytes)
+                    // Get the next 16 bytes (or remaining bytes if fewer)
                     const lineBytes = data.slice(i, i + 16);
                     const hexBytes = lineBytes.map(byte => byte.toString(16).padStart(2, '0').toUpperCase()).join(' ');
 
