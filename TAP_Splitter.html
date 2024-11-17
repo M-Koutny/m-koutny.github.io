@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ZX Spectrum TAP File Splitter</title>
+</head>TAP File Splitter
+<body>
+    <h2>ZX Spectrum TAP File Splitter</h2>
+    <p>Upload a multi-item .TAP file to split it into individual blocks.</p>
+    <input type="file" id="tapFile" accept=".tap">
+    <button onclick="splitTapFile()">Split TAP File</button>
+    <div id="output"></div>
+
+    <script>
+        function splitTapFile() {
+            const fileInput = document.getElementById('tapFile');
+            if (!fileInput.files.length) {
+                alert('Please upload a .TAP file.');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const outputDiv = document.getElementById('output');
+                outputDiv.innerHTML = ''; // Clear previous output
+
+                let offset = 0;
+                let blockNum = 1;
+
+                while (offset < data.length) {
+                    if (offset + 2 > data.length) {
+                        alert("File ended unexpectedly.");
+                        return;
+                    }
+
+                    // Read the block length (2 bytes, little-endian)
+                    const length = data[offset] | (data[offset + 1] << 8);
+                    offset += 2;
+
+                    if (offset + length > data.length) {
+                        alert("Block length exceeds remaining data.");
+                        return;
+                    }
+
+                    // Extract block data, including the flag and checksum bytes
+                    const block = data.slice(offset - 2, offset + length);
+                    const blockData = data.slice(offset, offset + length - 1);
+                    const flagByte = data[offset];
+                    const checksumByte = data[offset + length - 1];
+                    const computedChecksum = computeChecksum(new Uint8Array([flagByte, ...blockData]));
+
+                    // Verify checksum
+                    if (checksumByte !== computedChecksum) {
+                        alert(`Checksum mismatch in block ${blockNum}`);
+                        return;
+                    }
+
+                    // Check if this is a header block (flag byte 0x00 indicates header)
+                    if (flagByte === 0x00 && length >= 17) {
+                        // Extract and display header information
+                        const type = blockData[1];
+                        const filename = new TextDecoder("ascii").decode(blockData.slice(2, 12)).trim();
+                        const dataLength = blockData[12] | (blockData[13] << 8);
+                        const param1 = blockData[14] | (blockData[15] << 8);
+                        const param2 = blockData[16] | (blockData[17] << 8);
+
+                        const headerInfo = `
+                            <p><strong>Block ${blockNum} (Header)</strong><br>
+                            Filename: ${filename}<br>
+                            Type: ${type} (Program: 0, Number array: 1, Character array: 2, Code file: 3)<br>
+                            Data Length: ${dataLength} bytes<br>
+                            Parameter 1: ${param1}<br>
+                            Parameter 2: ${param2}<br>
+                            Checksum: Valid</p>`;
+                        outputDiv.insertAdjacentHTML("beforeend", headerInfo);
+                    } else {
+                        // This is a data block
+                        const blockInfo = `
+                            <p><strong>Block ${blockNum} (Data)</strong><br>
+                            Flag Byte: ${flagByte.toString(16)}<br>
+                            Length: ${length} bytes<br>
+                            Checksum: Valid</p>`;
+                        outputDiv.insertAdjacentHTML("beforeend", blockInfo);
+                    }
+
+                    // Create a downloadable blob for the block
+                    const blob = new Blob([block], { type: 'application/octet-stream' });
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = `block${blockNum}.tap`;
+                    link.innerText = `Download Block ${blockNum}`;
+                    link.style.display = 'block';
+
+                    outputDiv.appendChild(link);
+
+                    // Move to the next block
+                    offset += length;
+                    blockNum++;
+                }
+
+                alert(`Successfully split ${blockNum - 1} blocks.`);
+            };
+
+            reader.readAsArrayBuffer(file);
+        }
+
+        function computeChecksum(block) {
+            let checksum = 0;
+            for (let i = 0; i < block.length; i++) {
+                checksum ^= block[i];
+            }
+            return checksum;
+        }
+    </script>
+</body>
+</html>
