@@ -4,7 +4,7 @@ Hello, friend! You have found my GitHub Pages site. Here, I play and learn with 
 
 ## 🎈 What Is This?
 
-This is a place where I store my small project that I make in my free time. Nio need to save this page - it's just personal for fun!
+This is a place where I store my small project that I make in my free time. Needn't to save this page - it's just personal for fun!
 
 ## 🤪 My Projects
 
