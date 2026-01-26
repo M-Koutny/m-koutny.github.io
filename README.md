@@ -16,5 +16,5 @@ Here are a few of my current projects:
 2. **[Simple JavaScript Test](https://m-koutny.github.io/SimpleJavaScriptTest.html)**  
    This is a fun place where I try out JavaScript. It can be a little crazy!
    
-3. **[ZX Spectrum Tap Splitter ](https://github.com/M-Koutny/m-koutny.github.io/blob/main/TAP_Splitter.html)**
+3. **[ZX Spectrum Tap Splitter](https://github.com/M-Koutny/m-koutny.github.io/blob/main/TAP_Splitter.html)**
    This is a simple script designed to split ZX Spectrum tap files into individual blocks. (Mainly extract some very old data bits - e.g. simple vector fonts of ALFI plotter).
