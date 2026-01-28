@@ -20,6 +20,6 @@ Here are a few of my current projects:
    This is a simple script designed to split ZX Spectrum tap files into individual blocks. (Mainly extract some very old data bits - e.g. simple vector fonts of ALFI plotter).
 
 3. **[IDF module for FreeCAD](https://github.com/FreeCAD/FreeCAD/tree/main/src/Mod/Idf)**  
-   This is a link to IDF(Intermediate Data Format - exchange PCB data between mechanical and electrical designs) module that I wrote and contributed to FreeCAD  (3D parametric modeler) in 2012.
+   This is a link to IDF module (Intermediate Data Format - exchange PCB data between mechanical and electrical designs) that I wrote and contributed to FreeCAD (3D parametric modeler) in 2012.
 
 
