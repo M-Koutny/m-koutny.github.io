@@ -23,6 +23,6 @@ Here are a few of my current projects:
   This is a simple online (using p5.js) javascript designed to draw simple vector fonts of ALFI plotter extracted from ZX Spectrum binary (tap files).
 
 5. **[IDF module for FreeCAD](https://github.com/FreeCAD/FreeCAD/tree/main/src/Mod/Idf)**  
-   This is a link to IDF module (Intermediate Data Format - exchange PCB data between mechanical and electrical designs) that I wrote and contributed to FreeCAD (3D parametric modeler) in 2012.
+   This is a link to IDF module (Intermediate Data Format - exchange PCB data between mechanical and electrical designs) that I wrote (in Python) and contributed to FreeCAD (3D parametric modeler) in 2012.
 
 
