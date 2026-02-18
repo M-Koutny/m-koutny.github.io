@@ -3,26 +3,32 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>ESP32-C3 WebUSB (Android)</title>
+  <title>ESP32-C3 WebUSB Test</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      padding: 10px;
+      padding: 15px;
       max-width: 100%;
       margin: 0 auto;
+      text-align: center;
     }
     button {
       padding: 12px;
-      margin: 5px 0;
+      margin: 10px 0;
       background: #4285f4;
       color: white;
       border: none;
       border-radius: 4px;
       width: 100%;
       font-size: 16px;
+      cursor: pointer;
+    }
+    button:disabled {
+      background: #cccccc;
+      cursor: default;
     }
     #log {
-      margin-top: 10px;
+      margin-top: 15px;
       padding: 10px;
       border: 1px solid #ddd;
       border-radius: 4px;
@@ -30,6 +36,7 @@
       overflow-y: scroll;
       background: #f9f9f9;
       white-space: pre-wrap;
+      text-align: left;
       font-family: monospace;
     }
     .error { color: red; }
@@ -38,8 +45,7 @@
   </style>
 </head>
 <body>
-  <h2>ESP32-C3 WebUSB Tester</h2>
-  <p>Connect your ESP32-C3 and tap "Connect".</p>
+  <h2>ESP32-C3 WebUSB Test</h2>
   <button id="connect">Connect to ESP32-C3</button>
   <button id="send" disabled>Send Test Command</button>
   <div id="log"></div>
@@ -47,84 +53,71 @@
   <script>
     let usbDevice;
     const logElement = document.getElementById('log');
+    const connectButton = document.getElementById('connect');
+    const sendButton = document.getElementById('send');
 
     function log(message, isError = false, isStatus = false) {
       const line = document.createElement('div');
       line.textContent = message;
-      if (isError) line.className = 'error';
-      else if (isStatus) line.className = 'status';
-      else line.className = 'success';
+      line.className = isError ? 'error' : isStatus ? 'status' : 'success';
       logElement.appendChild(line);
       logElement.scrollTop = logElement.scrollHeight;
     }
 
-    // Log all interfaces and endpoints
-    async function logInterfaces(device) {
-      const config = device.configurations[0];
-      for (let iface of config.interfaces) {
-        log(`Interface ${iface.interfaceNumber}:`, false, true);
-        for (let alt of iface.alternates) {
-          for (let endpoint of alt.endpoints) {
-            log(
-              `  Endpoint ${endpoint.endpointNumber}: ` +
-              `Type=${endpoint.type}, Direction=${endpoint.direction}, ` +
-              `PacketSize=${endpoint.packetSize}`
-            );
-          }
-        }
-      }
-    }
-
-    document.getElementById('connect').addEventListener('click', async () => {
+    connectButton.addEventListener('click', async () => {
       try {
-        log('Requesting USB device...', false, true);
+        log('Connecting to ESP32-C3...', false, true);
+
         usbDevice = await navigator.usb.requestDevice({
           filters: [{ vendorId: 0x303a, productId: 0x1001 }]
         });
-        log(`Device: ${usbDevice.productName}`, false, true);
+
+        log(`Device found: ${usbDevice.productName}`, false, true);
 
         await usbDevice.open();
         log('Device opened.', false, true);
 
-        if (usbDevice.configuration === null) {
-          await usbDevice.selectConfiguration(1);
-          log('Configuration selected.', false, true);
-        }
-
-        // Log all interfaces and endpoints
-        await logInterfaces(usbDevice);
+        await usbDevice.selectConfiguration(1);
+        log('Configuration selected.', false, true);
 
         // Claim Interface 1 (has bulk OUT/IN endpoints)
-        try {
-          await usbDevice.claimInterface(1);
-          log('Interface 1 claimed. Ready!', false, true);
-          document.getElementById('send').disabled = false;
-          document.getElementById('send').dataset.iface = '1';
-        } catch (error) {
-          log(`Failed to claim interface 1: ${error.message}`, true);
-          // Fallback to Interface 2 if 1 fails
-          try {
-            await usbDevice.claimInterface(2);
-            log('Interface 2 claimed. Ready!', false, true);
-            document.getElementById('send').disabled = false;
-            document.getElementById('send').dataset.iface = '2';
-          } catch (error) {
-            log(`Failed to claim interface 2: ${error.message}`, true);
-          }
-        }
+        await usbDevice.claimInterface(1);
+        log('Interface 1 claimed. Ready to communicate!', false, true);
+
+        sendButton.disabled = false;
       } catch (error) {
         log(`Error: ${error.message}`, true);
         alert(`Error: ${error.message}`);
       }
     });
 
-    document.getElementById('send').addEventListener('click', async () => {
+    sendButton.addEventListener('click', async () => {
       if (!usbDevice) {
         log('No device connected!', true);
         return;
       }
-      try {
-        const ifaceNum = parseInt(document.getElementById('send').dataset.iface);
-        log(`Using interface ${ifaceNum}...`, false, true);
 
-        // Endpoints for Interface 1:
+      try {
+        log('Sending test command...', false, true);
+
+        // Use Endpoint 1 for OUT and Endpoint 1 for IN (Interface 1)
+        const endpointOut = 1;
+        const endpointIn = 1;
+
+        const data = new TextEncoder().encode('hello\n');
+        log(`Sending: "hello"`, false, true);
+
+        await usbDevice.transferOut(endpointOut, data);
+        log('Data sent successfully.', false, true);
+
+        const result = await usbDevice.transferIn(endpointIn, 64);
+        const response = new TextDecoder().decode(result.data);
+        log(`Received: ${response}`, false, true);
+      } catch (error) {
+        log(`Error: ${error.message}`, true);
+        alert(`Error: ${error.message}`);
+      }
+    });
+  </script>
+</body>
+</html>
