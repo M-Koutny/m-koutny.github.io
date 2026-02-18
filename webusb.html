@@ -78,8 +78,8 @@
                     log('Configuration selected.');
                 }
 
-                await usbDevice.claimInterface(1);
-                log('Interface 1 claimed. Ready to communicate!');
+                await usbDevice.claimInterface(2);
+                log('Interface 2 claimed. Ready to communicate!');
                 sendButton.disabled = false;
             } catch (error) {
                 log(`Error: ${error.message}`, true);
@@ -98,7 +98,7 @@
 
                 // Send a test command (e.g., "hello")
                 const encoder = new TextEncoder();
-                const data = encoder.encode('hello\n');
+                const data = encoder.encode('dir()\n');
                 await usbDevice.transferOut(endpointOut, data);
                 log('Sent: hello');
 
