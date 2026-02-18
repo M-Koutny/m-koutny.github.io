@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESP32-C3 WebUSB Tester</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        button {
+            padding: 10px 15px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #3367d6;
+        }
+        #log {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            height: 300px;
+            overflow-y: scroll;
+            background: #f9f9f9;
+            white-space: pre-wrap;
+        }
+        .error {
+            color: red;
+        }
+        .success {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1>ESP32-C3 WebUSB Tester</h1>
+    <p>Click the button below to connect to your ESP32-C3 via WebUSB.</p>
+    <button id="connectButton">Connect to ESP32-C3</button>
+    <button id="sendButton" disabled>Send Test Command</button>
+    <div id="log"></div>
+
+    <script>
+        let usbDevice;
+        const logElement = document.getElementById('log');
+        const connectButton = document.getElementById('connectButton');
+        const sendButton = document.getElementById('sendButton');
+
+        function log(message, isError = false) {
+            const line = document.createElement('div');
+            line.textContent = message;
+            line.className = isError ? 'error' : 'success';
+            logElement.appendChild(line);
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+
+        connectButton.addEventListener('click', async () => {
+            try {
+                log('Requesting USB device...');
+                usbDevice = await navigator.usb.requestDevice({
+                    filters: [{ vendorId: 0x303a, productId: 0x1001 }]
+                });
+                log(`Device found: ${usbDevice.productName}`);
+
+                await usbDevice.open();
+                log('Device opened.');
+
+                if (usbDevice.configuration === null) {
+                    await usbDevice.selectConfiguration(1);
+                    log('Configuration selected.');
+                }
+
+                await usbDevice.claimInterface(0);
+                log('Interface 0 claimed. Ready to communicate!');
+                sendButton.disabled = false;
+            } catch (error) {
+                log(`Error: ${error.message}`, true);
+                console.error(error);
+            }
+        });
+
+        sendButton.addEventListener('click', async () => {
+            if (!usbDevice) {
+                log('No device connected.', true);
+                return;
+            }
+            try {
+                const endpointOut = 1; // Adjust based on your device
+                const endpointIn = 2;  // Adjust based on your device
+
+                // Send a test command (e.g., "hello")
+                const encoder = new TextEncoder();
+                const data = encoder.encode('hello\n');
+                await usbDevice.transferOut(endpointOut, data);
+                log('Sent: hello');
+
+                // Read response
+                const result = await usbDevice.transferIn(endpointIn, 64);
+                const decoder = new TextDecoder();
+                const response = decoder.decode(result.data);
+                log(`Received: ${response}`);
+            } catch (error) {
+                log(`Error: ${error.message}`, true);
+                console.error(error);
+            }
+        });
+    </script>
+</body>
+</html>
