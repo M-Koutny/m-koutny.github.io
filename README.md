@@ -11,7 +11,7 @@ This is a place where I store my small project that I make in my free time. Need
 Here are a few of my current projects:
 
 
-1. **[IDF module for FreeCAD](https://github.com/FreeCAD/FreeCAD/tree/main/src/Mod/Idf)**  
+1. **[IDF module for FreeCAD](https://github.com/FreeCAD/IDF)**  
    This is a link to IDF module (Intermediate Data Format - exchange PCB data between mechanical and electrical designs) that I wrote (in Python) and contributed to FreeCAD (3D parametric modeler) in 2012.
 
 
